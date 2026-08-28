@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel Hospitalar - Dados em Tempo Real</title>
+    <style>
+        /* Cores Hospitalares: Fundo cinza-gelo suave, moldura azul clínico e branco */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8; /* Background hospitalar */
+            margin: 0;
+            padding: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .moldura-hospitalar {
+            background-color: #ffffff;
+            border: 3px solid #005a9c; /* Azul clínico da moldura */
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 90, 156, 0.15);
+            width: 100%;
+            max-width: 1000px;
+            padding: 25px;
+            box-sizing: border-box;
+        }
+
+        .cabecalho-painel {
+            border-bottom: 2px solid #e1e8ed;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .cabecalho-painel h2 {
+            margin: 0;
+            color: #003366; /* Azul escuro corporativo/médico */
+            font-size: 22px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-atualizacao {
+            font-size: 12px;
+            color: #557a95;
+            margin-top: 5px;
+        }
+
+        .tabela-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            border: 1px solid #d0dde5;
+            padding: 12px 15px;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        th {
+            background-color: #005a9c; /* Azul clínico */
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f7fafc; /* Efeito zebra sutil */
+        }
+
+        tr:hover {
+            background-color: #eef4f9;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="moldura-hospitalar">
+        <div class="cabecalho-painel">
+            <h2>Painel de Controle - Dados Hospitalares</h2>
+            <div class="status-atualizacao">Atualizando automaticamente a cada 10 segundos</div>
+        </div>
+        
+        <div id="tabela" class="tabela-container">Carregando dados...</div>
+    </div>
+
+    <script>
+        const urlCSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTAQ4Vy7_JLWeqXShPyi5SNeyjOLslqKPtfNTZVrnEmfTqd6Vchi6s-DtxSplDmwKLiPEvzN94Z53W8/pub?gid=763842179&single=true&output=csv';
+
+        function buscarDados() {
+            if (urlCSV === 'SUA_URL_DO_CSV_AQUI' || urlCSV === '') {
+                document.getElementById('tabela').innerHTML = '<p style="color: #d9534f; font-weight: bold;">Substitua o texto do código pelo link CSV da sua planilha.</p>';
+                return;
+            }
+
+            // Evita o cache do Google trazendo dados em tempo real
+            const linkSemCache = urlCSV + (urlCSV.includes('?') ? '&' : '?') + 't=' + new Date().getTime();
+
+            fetch(linkSemCache)
+                .then(res => res.text())
+                .then(data => {
+                    // Identifica se a planilha usa ponto e vírgula (comum no Brasil) ou vírgula
+                    const divisor = data.includes(';') ? ';' : ',';
+                    const linhas = data.split('\n');
+                    let html = '<table>';
+                    
+                    linhas.forEach((linha, i) => {
+                        if (!linha.trim()) return;
+                        
+                        // Separa as colunas puramente pelo divisor correto sem quebrar palavras compostas
+                        const colunas = linha.split(divisor);
+
+                        html += '<tr>';
+                        colunas.forEach(col => {
+                            const tag = i === 0 ? 'th' : 'td';
+                            
+                            // Limpa aspas das bordas do texto e espaços extras
+                            let textoLimpo = col.replace(/^"|"$/g, '').trim();
+                            
+                            // Se a célula estiver vazia no Sheets, garante que exiba um espaço para não quebrar o layout
+                            if (textoLimpo === "") {
+                                textoLimpo = "-"; 
+                            }
+                            
+                            html += `<${tag}>${textoLimpo}</${tag}>`;
+                        });
+                        html += '</tr>';
+                    });
+                    
+                    html += '</table>';
+                    document.getElementById('tabela').innerHTML = html;
+                })
+                .catch(err => {
+                    console.error(err);
+                    document.getElementById('tabela').innerHTML = '<p style="color: #d9534f;">Erro ao carregar os dados da planilha.</p>';
+                });
+        }
+
+        buscarDados();
+        // Atualiza a cada 10 segundos
+        setInterval(buscarDados, 10000);
+    </script>
+
+
+
+</body>
+</html>
