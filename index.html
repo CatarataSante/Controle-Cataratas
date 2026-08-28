@@ -91,62 +91,65 @@
         <div id="tabela" class="tabela-container">Carregando dados...</div>
     </div>
 
-    <script>
-        const urlCSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTAQ4Vy7_JLWeqXShPyi5SNeyjOLslqKPtfNTZVrnEmfTqd6Vchi6s-DtxSplDmwKLiPEvzN94Z53W8/pub?gid=763842179&single=true&output=csv';
+<script>
+    const urlCSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTAQ4Vy7_JLWeqXShPyi5SNeyjOLslqKPtfNTZVrnEmfTqd6Vchi6s-DtxSplDmwKLiPEvzN94Z53W8/pub?gid=763842179&single=true&output=csv';
 
-        function buscarDados() {
-            if (urlCSV === 'SUA_URL_DO_CSV_AQUI' || urlCSV === '') {
-                document.getElementById('tabela').innerHTML = '<p style="color: #d9534f; font-weight: bold;">Substitua o texto do código pelo link CSV da sua planilha.</p>';
-                return;
-            }
-
-            // Evita o cache do Google trazendo dados em tempo real
-            const linkSemCache = urlCSV + (urlCSV.includes('?') ? '&' : '?') + 't=' + new Date().getTime();
-
-            fetch(linkSemCache)
-                .then(res => res.text())
-                .then(data => {
-                    // Identifica se a planilha usa ponto e vírgula (comum no Brasil) ou vírgula
-                    const divisor = data.includes(';') ? ';' : ',';
-                    const linhas = data.split('\n');
-                    let html = '<table>';
-                    
-                    linhas.forEach((linha, i) => {
-                        if (!linha.trim()) return;
-                        
-                        // Separa as colunas puramente pelo divisor correto sem quebrar palavras compostas
-                        const colunas = linha.split(divisor);
-
-                        html += '<tr>';
-                        colunas.forEach(col => {
-                            const tag = i === 0 ? 'th' : 'td';
-                            
-                            // Limpa aspas das bordas do texto e espaços extras
-                            let textoLimpo = col.replace(/^"|"$/g, '').trim();
-                            
-                            // Se a célula estiver vazia no Sheets, garante que exiba um espaço para não quebrar o layout
-                            if (textoLimpo === "") {
-                                textoLimpo = "-"; 
-                            }
-                            
-                            html += `<${tag}>${textoLimpo}</${tag}>`;
-                        });
-                        html += '</tr>';
-                    });
-                    
-                    html += '</table>';
-                    document.getElementById('tabela').innerHTML = html;
-                })
-                .catch(err => {
-                    console.error(err);
-                    document.getElementById('tabela').innerHTML = '<p style="color: #d9534f;">Erro ao carregar os dados da planilha.</p>';
-                });
+    function buscarDados() {
+        if (urlCSV === 'SUA_URL_DO_CSV_AQUI' || urlCSV === '') {
+            document.getElementById('tabela').innerHTML = '<p style="color: #d9534f; font-weight: bold;">Substitua o texto do código pelo link CSV da sua planilha.</p>';
+            return;
         }
 
-        buscarDados();
-        // Atualiza a cada 10 segundos
-        setInterval(buscarDados, 10000);
-    </script>
+        // Evita o cache do Google
+        const linkSemCache = urlCSV + (urlCSV.includes('?') ? '&' : '?') + 't=' + new Date().getTime();
+
+        fetch(linkSemCache)
+            .then(res => res.text())
+            .then(data => {
+                // Se o Google retornar vazio por instabilidade, mantém a última tabela boa na tela
+                if (!data || data.trim() === "") {
+                    console.warn("Dados vazios recebidos do Sheets, mantendo estado anterior.");
+                    return;
+                }
+
+                const divisor = data.includes(';') ? ';' : ',';
+                const linhas = data.split('\n');
+                let html = '<table>';
+                
+                linhas.forEach((linha, i) => {
+                    if (!linha.trim()) return;
+                    
+                    const colunas = linha.split(divisor);
+
+                    html += '<tr>';
+                    colunas.forEach(col => {
+                        const tag = i === 0 ? 'th' : 'td';
+                        let textoLimpo = col.replace(/^"|"$/g, '').trim();
+                        
+                        if (textoLimpo === "") {
+                            textoLimpo = "-"; 
+                        }
+                        
+                        html += `<${tag}>${textoLimpo}</${tag}>`;
+                    });
+                    html += '</tr>';
+                });
+                
+                html += '</table>';
+                document.getElementById('tabela').innerHTML = html;
+            })
+            .catch(err => {
+                console.error("Erro na requisição:", err);
+                // Não limpa a tabela em caso de queda pontual de rede, para não sumir os dados da tela
+            });
+    }
+
+    // Carrega ao abrir a página
+    buscarDados();
+    
+    // Atualiza a cada 30 segundos (30000ms) para evitar bugs de requisição excessiva no Sheets
+    setInterval(buscarDados, 30000);
+</script>
 
 
 
