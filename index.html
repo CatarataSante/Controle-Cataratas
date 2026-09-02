@@ -2,30 +2,37 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Painel Hospitalar - Dados em Tempo Real</title>
+    <title>Painel Hospitalar Cataratas - Dados em Tempo Real</title>
     <style>
-        /* Cores Hospitalares: Fundo cinza-gelo suave, moldura azul clínico e branco */
+        /* Cores Hospitalares e Configuração de Background */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f4f8; /* Background hospitalar */
+            background-image: url('/background.png'); 
+            background-size: cover;           
+            background-position: center;     
+            background-repeat: no-repeat;    
+            background-attachment: fixed;    
+            background-color: #4c7eaf;       
             margin: 0;
             padding: 30px;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
             min-height: 100vh;
             box-sizing: border-box;
         }
 
         .moldura-hospitalar {
-            background-color: #ffffff;
-            border: 3px solid #005a9c; /* Azul clínico da moldura */
+            background-color: rgba(255, 255, 255, 0.75);
+            border: 3px solid #005a9c;
             border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0, 90, 156, 0.15);
+            box-shadow: 0 8px 24px rgba(0, 90, 156, 0.25);
             width: 100%;
             max-width: 1000px;
             padding: 25px;
             box-sizing: border-box;
+            backdrop-filter: blur(2px);
+            margin-bottom: 25px;
         }
 
         .cabecalho-painel {
@@ -36,7 +43,7 @@
 
         .cabecalho-painel h2 {
             margin: 0;
-            color: #003366; /* Azul escuro corporativo/médico */
+            color: #003366;
             font-size: 22px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -66,92 +73,191 @@
         }
 
         th {
-            background-color: #005a9c; /* Azul clínico */
+            background-color: #005a9c;
             color: #ffffff;
             font-weight: 600;
         }
 
         tr:nth-child(even) {
-            background-color: #f7fafc; /* Efeito zebra sutil */
+            background-color: rgba(247, 250, 252, 0.6);
         }
 
         tr:hover {
-            background-color: #eef4f9;
+            background-color: rgba(238, 244, 249, 0.8);
+        }
+
+        .rodape-painel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 2px solid #e1e8ed;
+            margin-top: 20px;
+            padding-top: 15px;
+        }
+
+        .rodape-texto {
+            font-size: 12px;
+            color: #557a95;
+        }
+
+        .logo-rodape {
+            max-height: 40px;
+            width: auto;
+        }
+
+        details summary {
+            cursor: pointer;
+            color: #005a9c;
+            font-weight: 600;
+            user-select: none;
+        }
+
+        details summary:hover {
+            color: #003366;
+            text-decoration: underline;
+        }
+
+        .detalhe-conteudo {
+            margin-top: 8px;
+            padding: 10px;
+            background: #f9fbfd;
+            border: 1px solid #d0dde5;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #333;
         }
     </style>
 </head>
 <body>
 
+    <!-- QUADRO 1: Tabela Principal (Cidades, Datas e Quantidades) -->
     <div class="moldura-hospitalar">
         <div class="cabecalho-painel">
-            <h2>Painel de Controle - Dados Hospitalares</h2>
-            <div class="status-atualizacao">Atualizando automaticamente a cada 30 segundos</div>
+            <h2>Painel Cataratas - total</h2>
+            <div class="status-atualizacao">Atualizando automaticamente a cada 20 segundos</div>
         </div>
         
-        <div id="tabela" class="tabela-container">Carregando dados...</div>
+        <div id="tabela1" class="tabela-container">Carregando dados consolidados...</div>
+
+        <div class="rodape-painel">
+            <div class="rodape-texto">Sistema Integrado de Gestão</div>
+            <div>
+                <img src="/background.png" alt="Logo Instituição" class="logo-rodape">
+            </div>
+        </div>
     </div>
 
 <script>
-    const urlCSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTAQ4Vy7_JLWeqXShPyi5SNeyjOLslqKPtfNTZVrnEmfTqd6Vchi6s-DtxSplDmwKLiPEvzN94Z53W8/pub?gid=763842179&single=true&output=csv';
+        // Links CSV das duas abas do Google Sheets
+        const urlCSV1 = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTAQ4Vy7_JLWeqXShPyi5SNeyjOLslqKPtfNTZVrnEmfTqd6Vchi6s-DtxSplDmwKLiPEvzN94Z53W8/pub?gid=763842179&single=true&output=csv';
+        const urlCSV2 = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTAQ4Vy7_JLWeqXShPyi5SNeyjOLslqKPtfNTZVrnEmfTqd6Vchi6s-DtxSplDmwKLiPEvzN94Z53W8/pub?gid=836228025&single=true&output=csv';
 
-    function buscarDados() {
-        if (urlCSV === 'SUA_URL_DO_CSV_AQUI' || urlCSV === '') {
-            document.getElementById('tabela').innerHTML = '<p style="color: #d9534f; font-weight: bold;">Substitua o texto do código pelo link CSV da sua planilha.</p>';
-            return;
-        }
+        function carregarPainelCruzado() {
+            if (!urlCSV1 || urlCSV1.includes('COLOQUE_O_LINK')) {
+                document.getElementById('tabela1').innerHTML = '<p style="color: #d9534f; font-weight: bold;">Configure o link da Aba 1.</p>';
+                return;
+            }
 
-        // Evita o cache do Google
-        const linkSemCache = urlCSV + (urlCSV.includes('?') ? '&' : '?') + 't=' + new Date().getTime();
+            const linkCache1 = urlCSV1 + (urlCSV1.includes('?') ? '&' : '?') + 't=' + new Date().getTime();
+            const linkCache2 = urlCSV2 + (urlCSV2.includes('?') ? '&' : '?') + 't=' + new Date().getTime();
 
-        fetch(linkSemCache)
-            .then(res => res.text())
-            .then(data => {
-                // Se o Google retornar vazio por instabilidade, mantém a última tabela boa na tela
-                if (!data || data.trim() === "") {
-                    console.warn("Dados vazios recebidos do Sheets, mantendo estado anterior.");
-                    return;
-                }
-
-                const divisor = data.includes(';') ? ';' : ',';
-                const linhas = data.split('\n');
+            Promise.all([
+                fetch(linkCache1).then(res => res.text()),
+                fetch(linkCache2).then(res => res.text()).catch(() => "")
+            ])
+            .then(([data1, data2]) => {
+                const divisor1 = data1.includes(';') ? ';' : ',';
+                const divisor2 = data2.includes(';') ? ';' : ',';
+                
+                const linhas1 = data1.split('\n');
+                const linhas2 = data2.split('\n');
+                
                 let html = '<table>';
                 
-                linhas.forEach((linha, i) => {
+                linhas1.forEach((linha, i) => {
                     if (!linha.trim()) return;
-                    
-                    const colunas = linha.split(divisor);
+                    const colunas1 = linha.split(divisor1);
 
                     html += '<tr>';
-                    colunas.forEach(col => {
+                    colunas1.forEach(col => {
                         const tag = i === 0 ? 'th' : 'td';
                         let textoLimpo = col.replace(/^"|"$/g, '').trim();
-                        
-                        if (textoLimpo === "") {
-                            textoLimpo = "-"; 
-                        }
-                        
+                        if (textoLimpo === "") textoLimpo = "-";
                         html += `<${tag}>${textoLimpo}</${tag}>`;
                     });
+
+                    const primeiraColunaTexto = colunas1[0] ? colunas1[0].replace(/^"|"$/g, '').trim().toLowerCase() : "";
+                    const ehTotalizador = primeiraColunaTexto.includes('total') || primeiraColunaTexto.includes('geral');
+
+                    // Se for o cabeçalho (i === 0) ou uma linha de totalizador, não adiciona interatividade e deixa a coluna limpa
+                    if (i === 0) {
+                        html += '<th>Secretarias Encaminhadoras</th>';
+                    } else if (ehTotalizador) {
+                        html += '<td>-</td>';
+                    } else {
+                        const nomeCidade = colunas1[0].replace(/^"|"$/g, '').trim();
+                        let secretariasEncontradas = [];
+                        let secretariaAtual = "";
+
+                        linhas2.forEach((l2, idx2) => {
+                            if (!l2.trim()) return;
+                            const cols2 = l2.split(divisor2).map(c => c.replace(/^"|"$/g, '').trim());
+                            
+                            if (cols2[0] && cols2[0] !== "" && (cols2.length === 1 || cols2[1] === "" || isNaN(cols2[1]))) {
+                                secretariaAtual = cols2[0];
+                            }
+
+                            const linhaCompletaTexto = cols2.join(' ').toLowerCase();
+                            
+                            // Ignora linhas de total ou geral vindas da aba 2 para não poluir o detalhamento das cidades
+                            const ehTotalAba2 = linhaCompletaTexto.includes('total') || linhaCompletaTexto.includes('geral');
+
+                            if (nomeCidade && linhaCompletaTexto.includes(nomeCidade.toLowerCase()) && !ehTotalAba2) {
+                                let infoValor = cols2.filter(Boolean).join(' - ');
+                                
+                                let textoFinalItem = secretariaAtual && !infoValor.toLowerCase().includes(secretariaAtual.toLowerCase()) 
+                                    ? `${secretariaAtual}: ${infoValor}` 
+                                    : infoValor;
+
+                                if (!secretariasEncontradas.includes(textoFinalItem)) {
+                                    secretariasEncontradas.push(textoFinalItem);
+                                }
+                            }
+                        });
+
+                        let conteudoDetalhes = "";
+                        if (secretariasEncontradas.length > 0) {
+                            conteudoDetalhes = "<ul style='margin: 0; padding-left: 15px;'>";
+                            secretariasEncontradas.forEach(item => {
+                                conteudoDetalhes += `<li>${item}</li>`;
+                            });
+                            conteudoDetalhes += "</ul>";
+                        } else {
+                            conteudoDetalhes = "<span style='color: #777;'>Nenhum registro vinculado a esta cidade.</span>";
+                        }
+
+                        html += `<td>
+                            <details>
+                                <summary>Ver Detalhes</summary>
+                                <div class="detalhe-conteudo">${conteudoDetalhes}</div>
+                            </details>
+                        </td>`;
+                    }
                     html += '</tr>';
                 });
                 
                 html += '</table>';
-                document.getElementById('tabela').innerHTML = html;
+                document.getElementById('tabela1').innerHTML = html;
             })
             .catch(err => {
-                console.error("Erro na requisição:", err);
-                // Não limpa a tabela em caso de queda pontual de rede, para não sumir os dados da tela
+                console.error(err);
+                document.getElementById('tabela1').innerHTML = '<p style="color: #d9534f;">Erro ao processar os dados dos painéis.</p>';
             });
-    }
+        }
 
-    // Carrega ao abrir a página
-    buscarDados();
-    
-    // Atualiza a cada 30 segundos (30000ms) para evitar bugs de requisição excessiva no Sheets
-    setInterval(buscarDados, 30000);
-</script>
-
-
+        carregarPainelCruzado();
+        setInterval(carregarPainelCruzado, 20000);
+    </script>
 
 </body>
 </html>
