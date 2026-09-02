@@ -8,13 +8,13 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-image: url('background.png'); 
-            background-size: cover;           
-            background-position: center;     
+            background-size: cover;          
+            background-position: center;    
             background-repeat: no-repeat;    
             background-attachment: fixed;    
-            background-color: #4c7eaf;       
+            background-color: #4c7eaf;      
             margin: 0;
-            padding: 30px;
+            padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -23,22 +23,27 @@
         }
 
         .moldura-hospitalar {
-            background-color: rgba(255, 255, 255, 0.75);
+            background-color: rgba(255, 255, 255, 0.92);
             border: 3px solid #005a9c;
             border-radius: 12px;
             box-shadow: 0 8px 24px rgba(0, 90, 156, 0.25);
             width: 100%;
-            max-width: 1000px;
+            max-width: 1350px;
             padding: 25px;
             box-sizing: border-box;
             backdrop-filter: blur(2px);
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
         .cabecalho-painel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             border-bottom: 2px solid #e1e8ed;
             padding-bottom: 15px;
             margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .cabecalho-painel h2 {
@@ -55,27 +60,129 @@
             margin-top: 5px;
         }
 
+        .acoes-cabecalho {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .input-busca {
+            padding: 8px 12px;
+            border: 1px solid #d0dde5;
+            border-radius: 6px;
+            font-size: 13px;
+            width: 200px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-busca:focus {
+            border-color: #005a9c;
+        }
+
+        .botao-atualizar {
+            background-color: #005a9c;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: background-color 0.2s;
+        }
+
+        .botao-atualizar:hover {
+            background-color: #003366;
+        }
+
+        /* Layout em Duas Colunas (Tabela + Gráfico) */
+        .conteudo-principal {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .coluna-tabela {
+            flex: 2;
+            min-width: 550px;
+        }
+
+        .coluna-grafico {
+            flex: 1;
+            min-width: 320px;
+            background: #f9fbfd;
+            border: 1px solid #d0dde5;
+            border-radius: 8px;
+            padding: 15px;
+            box-sizing: border-box;
+            max-height: 550px;
+            overflow-y: auto;
+        }
+
+        .coluna-grafico h3 {
+            margin-top: 0;
+            color: #003366;
+            font-size: 15px;
+            border-bottom: 2px solid #e1e8ed;
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+        }
+
+        /* Estilo das Barras do Gráfico */
+        .barra-item {
+            margin-bottom: 10px;
+        }
+
+        .barra-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #333;
+            margin-bottom: 3px;
+            font-weight: 600;
+        }
+
+        .barra-container-fundo {
+            background-color: #e2e8f0;
+            border-radius: 4px;
+            height: 14px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .barra-preenchimento {
+            background-color: #005a9c;
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.4s ease;
+        }
+
         .tabela-container {
             overflow-x: auto;
+            max-height: 550px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
         }
 
         th, td {
             border: 1px solid #d0dde5;
-            padding: 12px 15px;
+            padding: 10px 12px;
             text-align: left;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         th {
             background-color: #005a9c;
             color: #ffffff;
             font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 2;
         }
 
         tr:nth-child(even) {
@@ -92,7 +199,7 @@
             align-items: center;
             border-top: 2px solid #e1e8ed;
             margin-top: 20px;
-            padding-top: 15px;
+            padding-top: 10px;
         }
 
         .rodape-texto {
@@ -101,7 +208,7 @@
         }
 
         .logo-rodape {
-            max-height: 40px;
+            max-height: 35px;
             width: auto;
         }
 
@@ -118,26 +225,41 @@
         }
 
         .detalhe-conteudo {
-            margin-top: 8px;
-            padding: 10px;
+            margin-top: 6px;
+            padding: 8px;
             background: #f9fbfd;
             border: 1px solid #d0dde5;
             border-radius: 6px;
-            font-size: 13px;
+            font-size: 12px;
             color: #333;
         }
     </style>
 </head>
 <body>
 
-    <!-- QUADRO 1: Tabela Principal (Cidades, Datas e Quantidades) -->
     <div class="moldura-hospitalar">
         <div class="cabecalho-painel">
-            <h2>Painel Cataratas - total</h2>
-            <div class="status-atualizacao">Atualizando automaticamente a cada 20 segundos</div>
+            <div>
+                <h2>Painel Cataratas - total</h2>
+                <div class="status-atualizacao">Atualizando automaticamente a cada 2 minutos</div>
+            </div>
+            <div class="acoes-cabecalho">
+                <input type="text" id="filtroCidade" class="input-busca" placeholder="Filtrar cidade..." onkeyup="filtrarTabela()">
+                <button class="botao-atualizar" id="btnAtualizar" onclick="carregarPainelCruzado()">Atualizar Agora</button>
+            </div>
         </div>
         
-        <div id="tabela1" class="tabela-container">Carregando dados consolidados...</div>
+        <!-- Estrutura dividida em duas colunas -->
+        <div class="conteudo-principal">
+            <div class="coluna-tabela">
+                <div id="tabela1" class="tabela-container">Carregando dados consolidados...</div>
+            </div>
+            
+            <div class="coluna-grafico">
+                <h3>Volume por Cidade</h3>
+                <div id="graficoBarras">Carregando gráfico...</div>
+            </div>
+        </div>
 
         <div class="rodape-painel">
             <div class="rodape-texto">Sistema Integrado de Gestão</div>
@@ -147,10 +269,13 @@
         </div>
     </div>
 
-<script>
-        // Links CSV das duas abas do Google Sheets
+    <script>
         const urlCSV1 = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTAQ4Vy7_JLWeqXShPyi5SNeyjOLslqKPtfNTZVrnEmfTqd6Vchi6s-DtxSplDmwKLiPEvzN94Z53W8/pub?gid=763842179&single=true&output=csv';
         const urlCSV2 = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTAQ4Vy7_JLWeqXShPyi5SNeyjOLslqKPtfNTZVrnEmfTqd6Vchi6s-DtxSplDmwKLiPEvzN94Z53W8/pub?gid=836228025&single=true&output=csv';
+
+        let dadosGlobaisTabela = [];
+        let cabecalhoTabela = [];
+        let dadosGraficoCache = [];
 
         function carregarPainelCruzado() {
             if (!urlCSV1 || urlCSV1.includes('COLOQUE_O_LINK')) {
@@ -158,48 +283,67 @@
                 return;
             }
 
+            const btn = document.getElementById('btnAtualizar');
+            btn.disabled = true;
+            btn.textContent = 'Atualizando...';
+
             const linkCache1 = urlCSV1 + (urlCSV1.includes('?') ? '&' : '?') + 't=' + new Date().getTime();
             const linkCache2 = urlCSV2 + (urlCSV2.includes('?') ? '&' : '?') + 't=' + new Date().getTime();
 
             Promise.all([
-                fetch(linkCache1).then(res => res.text()),
+                fetch(linkCache1).then(res => {
+                    if (!res.ok) throw new Error('Erro na rede');
+                    return res.text();
+                }),
                 fetch(linkCache2).then(res => res.text()).catch(() => "")
             ])
             .then(([data1, data2]) => {
+                if (!data1 || data1.trim() === "") throw new Error('Dados vazios.');
+
                 const divisor1 = data1.includes(';') ? ';' : ',';
                 const divisor2 = data2.includes(';') ? ';' : ',';
                 
                 const linhas1 = data1.split('\n');
                 const linhas2 = data2.split('\n');
                 
-                let html = '<table>';
+                dadosGlobaisTabela = [];
+                dadosGraficoCache = [];
                 
                 linhas1.forEach((linha, i) => {
                     if (!linha.trim()) return;
-                    const colunas1 = linha.split(divisor1);
+                    const colunas1 = linha.split(divisor1).map(c => c.replace(/^"|"$/g, '').trim());
 
-                    html += '<tr>';
-                    colunas1.forEach(col => {
-                        const tag = i === 0 ? 'th' : 'td';
-                        let textoLimpo = col.replace(/^"|"$/g, '').trim();
-                        if (textoLimpo === "") textoLimpo = "-";
-                        html += `<${tag}>${textoLimpo}</${tag}>`;
-                    });
+                    if (i === 0) {
+                        cabecalhoTabela = colunas1;
+                        return;
+                    }
 
-                    const primeiraColunaTexto = colunas1[0] ? colunas1[0].replace(/^"|"$/g, '').trim().toLowerCase() : "";
+                    const nomeCidade = colunas1[0];
+                    if (!nomeCidade) return;
+
+                    const primeiraColunaTexto = nomeCidade.toLowerCase();
                     const ehTotalizador = primeiraColunaTexto.includes('total') || primeiraColunaTexto.includes('geral');
 
-                    // Se for o cabeçalho (i === 0) ou uma linha de totalizador, não adiciona interatividade e deixa a coluna limpa
-                    if (i === 0) {
-                        html += '<th>Secretarias Encaminhadoras</th>';
-                    } else if (ehTotalizador) {
-                        html += '<td>-</td>';
-                    } else {
-                        const nomeCidade = colunas1[0].replace(/^"|"$/g, '').trim();
-                        let secretariasEncontradas = [];
-                        let secretariaAtual = "";
+                    // Tenta identificar qual coluna numérica usar para o gráfico (pega a última coluna numérica da linha)
+                    let valorNumerico = 0;
+                    if (!ehTotalizador) {
+                        for (let c = colunas1.length - 1; c >= 1; c--) {
+                            let num = parseFloat(colunas1[c].replace(',', '.'));
+                            if (!isNaN(num)) {
+                                valorNumerico = num;
+                                break;
+                            }
+                        }
+                        if (valorNumerico > 0) {
+                            dadosGraficoCache.push({ cidade: nomeCidade, valor: valorNumerico });
+                        }
+                    }
 
-                        linhas2.forEach((l2, idx2) => {
+                    let secretariasEncontradas = [];
+                    let secretariaAtual = "";
+
+                    if (!ehTotalizador) {
+                        linhas2.forEach((l2) => {
                             if (!l2.trim()) return;
                             const cols2 = l2.split(divisor2).map(c => c.replace(/^"|"$/g, '').trim());
                             
@@ -208,13 +352,10 @@
                             }
 
                             const linhaCompletaTexto = cols2.join(' ').toLowerCase();
-                            
-                            // Ignora linhas de total ou geral vindas da aba 2 para não poluir o detalhamento das cidades
                             const ehTotalAba2 = linhaCompletaTexto.includes('total') || linhaCompletaTexto.includes('geral');
 
-                            if (nomeCidade && linhaCompletaTexto.includes(nomeCidade.toLowerCase()) && !ehTotalAba2) {
+                            if (linhaCompletaTexto.includes(nomeCidade.toLowerCase()) && !ehTotalAba2) {
                                 let infoValor = cols2.filter(Boolean).join(' - ');
-                                
                                 let textoFinalItem = secretariaAtual && !infoValor.toLowerCase().includes(secretariaAtual.toLowerCase()) 
                                     ? `${secretariaAtual}: ${infoValor}` 
                                     : infoValor;
@@ -224,39 +365,110 @@
                                 }
                             }
                         });
-
-                        let conteudoDetalhes = "";
-                        if (secretariasEncontradas.length > 0) {
-                            conteudoDetalhes = "<ul style='margin: 0; padding-left: 15px;'>";
-                            secretariasEncontradas.forEach(item => {
-                                conteudoDetalhes += `<li>${item}</li>`;
-                            });
-                            conteudoDetalhes += "</ul>";
-                        } else {
-                            conteudoDetalhes = "<span style='color: #777;'>Nenhum registro vinculado a esta cidade.</span>";
-                        }
-
-                        html += `<td>
-                            <details>
-                                <summary>Ver Detalhes</summary>
-                                <div class="detalhe-conteudo">${conteudoDetalhes}</div>
-                            </details>
-                        </td>`;
                     }
-                    html += '</tr>';
+
+                    dadosGlobaisTabela.push({
+                        cidade: nomeCidade,
+                        colunas: colunas1,
+                        eTotal: ehTotalizador,
+                        secretarias: secretariasEncontradas
+                    });
                 });
-                
-                html += '</table>';
-                document.getElementById('tabela1').innerHTML = html;
+
+                renderizarInterface();
             })
             .catch(err => {
-                console.error(err);
-                document.getElementById('tabela1').innerHTML = '<p style="color: #d9534f;">Erro ao processar os dados dos painéis.</p>';
+                console.error("Erro ao atualizar:", err);
+                if(document.getElementById('tabela1').innerHTML.includes('Carregando')) {
+                    document.getElementById('tabela1').innerHTML = '<p style="color: #d9534f;">Erro ao carregar dados.</p>';
+                }
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.textContent = 'Atualizar Agora';
             });
         }
 
+        function renderizarInterface(filtroTexto = "") {
+            // Monta Tabela
+            let htmlTabela = '<table id="tabelaDados"><tr>';
+            cabecalhoTabela.forEach(h => htmlTabela += `<th>${h || "-"}</th>`);
+            htmlTabela += '<th>Secretarias Encaminhadoras</th></tr>';
+
+            let dadosFiltradosGrafico = [];
+
+            dadosGlobaisTabela.forEach(item => {
+                const matchFiltro = item.cidade.toLowerCase().includes(filtroTexto);
+                if (!matchFiltro && !item.eTotal) return;
+
+                // Se passou no filtro, adiciona ao gráfico (exceto totais)
+                if (!item.eTotal) {
+                    let valNum = 0;
+                    for (let c = item.colunas.length - 1; c >= 1; c--) {
+                        let num = parseFloat(item.colunas[c].replace(',', '.'));
+                        if (!isNaN(num)) { valNum = num; break; }
+                    }
+                    dadosFiltradosGrafico.push({ cidade: item.cidade, valor: valNum });
+                }
+
+                htmlTabela += '<tr>';
+                item.colunas.forEach(col => htmlTabela += `<td>${col || "-"}</td>`);
+
+                if (item.eTotal) {
+                    htmlTabela += '<td>-</td>';
+                } else {
+                    let conteudoDetalhes = item.secretarias.length > 0 
+                        ? "<ul style='margin: 0; padding-left: 15px;'>" + item.secretarias.map(s => `<li>${s}</li>`).join('') + "</ul>"
+                        : "<span style='color: #777;'>Nenhum registro.</span>";
+
+                    htmlTabela += `<td><details><summary>Ver Detalhes</summary><div class="detalhe-conteudo">${conteudoDetalhes}</div></details></td>`;
+                }
+                htmlTabela += '</tr>';
+            });
+
+            htmlTabela += '</table>';
+            document.getElementById('tabela1').innerHTML = htmlTabela;
+
+            // Monta Gráfico de Barras com base nos dados filtrados
+            renderizarGrafico(dadosFiltradosGrafico);
+        }
+
+        function renderizarGrafico(dados) {
+            const containerGrafico = document.getElementById('graficoBarras');
+            if (!dados || dados.length === 0) {
+                containerGrafico.innerHTML = '<span style="font-size:12px; color:#777;">Nenhum dado para exibir.</span>';
+                return;
+            }
+
+            // Ordena decrescente por quantidade
+            dados.sort((a, b) => b.valor - a.valor);
+            const maiorValor = Math.max(...dados.map(d => d.valor), 1);
+
+            let htmlGrafico = '';
+            dados.forEach(d => {
+                const porcentagem = Math.round((d.valor / maiorValor) * 100);
+                htmlGrafico += `
+                    <div class="barra-item">
+                        <div class="barra-info">
+                            <span>${d.cidade}</span>
+                            <span><strong>${d.valor}</strong></span>
+                        </div>
+                        <div class="barra-container-fundo">
+                            <div class="barra-preenchimento" style="width: ${porcentagem}%;"></div>
+                        </div>
+                    </div>
+                `;
+            });
+            containerGrafico.innerHTML = htmlGrafico;
+        }
+
+        function filtrarTabela() {
+            const filtro = document.getElementById('filtroCidade').value.toLowerCase();
+            renderizarInterface(filtro);
+        }
+
         carregarPainelCruzado();
-        setInterval(carregarPainelCruzado, 20000);
+        setInterval(carregarPainelCruzado, 120000);
     </script>
 
 </body>
