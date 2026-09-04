@@ -255,10 +255,12 @@
             font-size: 13px;
             font-weight: 500;
             color: var(--text-main);
+            white-space: nowrap;
         }
 
         th:last-child, td:last-child {
             border-right: none;
+            white-space: normal;
         }
 
         .centralizado {
@@ -321,6 +323,8 @@
             border-top: 1px solid rgba(226, 232, 240, 0.8);
             margin-top: 24px;
             padding-top: 16px;
+            flex-wrap: wrap;
+            gap: 12px;
         }
 
         .rodape-texto {
@@ -362,6 +366,48 @@
             font-size: 12px;
             color: var(--text-main);
             font-weight: 500;
+        }
+
+        /* --- ADAPTAÇÕES PARA CELULARES E TABLETS --- */
+        @media (max-width: 768px) {
+            body {
+                padding: 12px 8px;
+            }
+
+            .moldura-hospitalar {
+                padding: 16px;
+                border-radius: 12px;
+            }
+
+            .cabecalho-painel {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .acoes-cabecalho {
+                width: 100%;
+                flex-direction: column;
+            }
+
+            .input-busca, .botao-atualizar {
+                width: 100%;
+            }
+
+            .coluna-tabela {
+                min-width: 100%;
+            }
+
+            .coluna-grafico {
+                min-width: 100%;
+                max-height: none;
+            }
+
+            .rodape-painel {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
         }
     </style>
 </head>
@@ -446,16 +492,25 @@
                 let l1 = linhas1[0] ? linhas1[0].split(divisor1).map(c => c.replace(/^"|"$/g, '').trim()) : [];
                 let l2 = linhas1[1] ? linhas1[1].split(divisor1).map(c => c.replace(/^"|"$/g, '').trim()) : [];
 
-                cabecalhoTabela = l1.map((col, idx) => {
+                let indicesColunasValidas = [];
+                cabecalhoTabela = [];
+
+                l1.forEach((col, idx) => {
                     const subCol = l2[idx] || "";
-                    if (col.toUpperCase() === "CIDADES") return col;
-                    
-                    let nomeFinal = subCol && subCol !== "-" ? subCol : (col && col !== "-" ? col : "Coluna " + (idx + 1));
-                    
-                    if (nomeFinal.toUpperCase().includes("TOTAL GERAL")) {
-                        return "TOTAL";
+                    let nomeFinal = subCol && subCol !== "-" ? subCol : (col && col !== "-" ? col : "");
+
+                    if (idx > 0 && !nomeFinal && !col.toUpperCase().includes("TOTAL")) {
+                        return;
                     }
-                    return nomeFinal;
+
+                    if (col.toUpperCase() === "CIDADES") {
+                        nomeFinal = col;
+                    } else if (nomeFinal.toUpperCase().includes("TOTAL GERAL")) {
+                        nomeFinal = "TOTAL";
+                    }
+
+                    indicesColunasValidas.push(idx);
+                    cabecalhoTabela.push(nomeFinal || "Coluna " + (idx + 1));
                 });
 
                 indiceColunaTotalGeral = cabecalhoTabela.findIndex(h => h.toLowerCase().includes('total'));
@@ -463,11 +518,19 @@
                 let capturandoDuplicatas = false;
 
                 for (let i = 2; i < linhas1.length; i++) {
-                    const colunas1 = linhas1[i].split(divisor1).map(c => c.replace(/^"|"$/g, '').trim());
+                    const colunas1Brutas = linhas1[i].split(divisor1).map(c => c.replace(/^"|"$/g, '').trim());
+                    
+                    const colunas1 = indicesColunasValidas.map(idx => colunas1Brutas[idx] || "");
+
                     let nomeCidade = colunas1[0];
-                    if (!nomeCidade || nomeCidade === "-") continue;
+
+                    if (!nomeCidade || nomeCidade === "-" || nomeCidade === "" || nomeCidade.toLowerCase() === "(vazio)") continue;
 
                     const primeiraColunaTexto = nomeCidade.toLowerCase();
+                    const ehTotalizador = primeiraColunaTexto.includes('total') || primeiraColunaTexto.includes('geral');
+                    const temNomeValido = /[a-zA-ZáàâãéèêíïóôõöúçñÁÀÂÃÉÈÊÍÏÓÔÕÖÚÇÑ]/.test(nomeCidade);
+
+                    if (!temNomeValido && !ehTotalizador) continue;
 
                     if (primeiraColunaTexto.includes('duplicata') || capturandoDuplicatas) {
                         capturandoDuplicatas = true;
@@ -486,22 +549,34 @@
                         continue;
                     }
 
-                    const ehTotalizador = primeiraColunaTexto.includes('total') || primeiraColunaTexto.includes('geral');
-
                     if (ehTotalizador) {
                         colunas1[0] = "Total";
                         nomeCidade = "Total";
+
+                        let somaLinhaTotal = 0;
+                        for (let c = 1; c < colunas1.length; c++) {
+                            if (c === indiceColunaTotalGeral) continue;
+                            let num = parseFloat(colunas1[c].replace(',', '.'));
+                            if (!isNaN(num)) somaLinhaTotal += num;
+                        }
+                        if (indiceColunaTotalGeral !== -1) {
+                            colunas1[indiceColunaTotalGeral] = somaLinhaTotal.toString();
+                        }
+                    } else {
+                        let somaCidade = 0;
+                        for (let c = 1; c < colunas1.length; c++) {
+                            if (c === indiceColunaTotalGeral) continue;
+                            let num = parseFloat(colunas1[c].replace(',', '.'));
+                            if (!isNaN(num)) somaCidade += num;
+                        }
+                        if (indiceColunaTotalGeral !== -1) {
+                            colunas1[indiceColunaTotalGeral] = somaCidade.toString();
+                        }
                     }
 
                     let valorNumerico = 0;
-                    if (!ehTotalizador) {
-                        for (let c = colunas1.length - 1; c >= 1; c--) {
-                            let num = parseFloat(colunas1[c].replace(',', '.'));
-                            if (!isNaN(num)) {
-                                valorNumerico = num;
-                                break;
-                            }
-                        }
+                    if (!ehTotalizador && indiceColunaTotalGeral !== -1) {
+                        valorNumerico = parseFloat(colunas1[indiceColunaTotalGeral]);
                         if (valorNumerico > 0) {
                             dadosGraficoCache.push({ cidade: nomeCidade, valor: valorNumerico });
                         }
@@ -580,11 +655,7 @@
                 if (!matchFiltro && !item.eTotal) return;
 
                 if (!item.eTotal) {
-                    let valNum = 0;
-                    for (let c = item.colunas.length - 1; c >= 1; c--) {
-                        let num = parseFloat(item.colunas[c].replace(',', '.'));
-                        if (!isNaN(num)) { valNum = num; break; }
-                    }
+                    let valNum = parseFloat(item.colunas[indiceColunaTotalGeral]) || 0;
                     dadosFiltradosGrafico.push({ cidade: item.cidade, valor: valNum });
                 }
 
