@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel Hospitalar Cataratas - Dados em Tempo Real</title>
+    <!-- Tag para o ícone da aba (favicon) -->
+    <link rel="icon" type="image/png" href="logo.png">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -449,7 +452,6 @@
                     
                     let nomeFinal = subCol && subCol !== "-" ? subCol : (col && col !== "-" ? col : "Coluna " + (idx + 1));
                     
-                    // Substitui "TOTAL GERAL" no cabeçalho por "TOTAL"
                     if (nomeFinal.toUpperCase().includes("TOTAL GERAL")) {
                         return "TOTAL";
                     }
@@ -486,7 +488,6 @@
 
                     const ehTotalizador = primeiraColunaTexto.includes('total') || primeiraColunaTexto.includes('geral');
 
-                    // Substitui o texto "Total geral" por apenas "Total" na linha de somatório
                     if (ehTotalizador) {
                         colunas1[0] = "Total";
                         nomeCidade = "Total";
